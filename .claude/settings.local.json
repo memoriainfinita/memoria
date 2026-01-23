@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\ndocs: initialize Memoria project\n\nProject: Minimalista, local-first Markdown note manager with tree navigation, search, and wiki-links.\n\n- PROJECT.md: Complete vision and constraints\n- REQUIREMENTS.md: 40 requirements across 4 categories\n- ROADMAP.md: 4-phase execution plan \\(foundation → editor → search+links → polish\\)\n- config.json: Workflow preferences \\(YOLO + Quick mode\\)\n- STATE.md: Project tracking\n\nMVP scope: File system access + editor + search + links \\(no database, no cloud sync v1\\)\nTarget: 4 phases for quick delivery\n\nReady for Phase 1 planning.\nEOF\n\\)\")"
+    ]
+  }
+}

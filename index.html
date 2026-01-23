@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memoria</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Memoria</h1>
+    <button id="open-folder">Abrir carpeta de notas</button>
+    <input type="text" id="search" placeholder="Buscar nota...">
+  </header>
+  <main>
+    <aside id="notes-list"></aside>
+    <section id="editor">
+      <input type="text" id="note-title" placeholder="Título de la nota">
+  <textarea id="note-content" placeholder="Escribe tu nota en Markdown..." style="display:none;"></textarea>
+  <button id="save-note">Guardar</button>
+  <div id="preview"></div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
