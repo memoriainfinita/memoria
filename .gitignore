@@ -1,0 +1,18 @@
+# Memoria - Git Ignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+
+# Planning (keep in repo for context)
+!.planning/
+.planning/*.md
+
+# Backup
+*~
+*.bak
