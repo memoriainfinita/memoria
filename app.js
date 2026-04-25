@@ -9,6 +9,7 @@ const notesList = document.getElementById('notes-list');
 const noteTitle = document.getElementById('note-title');
 const noteContent = document.getElementById('note-content');
 const saveNoteBtn = document.getElementById('save-note');
+const toggleViewBtn = document.getElementById('toggle-view');
 const preview = document.getElementById('preview');
 const searchInput = document.getElementById('search');
 // Eliminado toggleEditorBtn
@@ -64,7 +65,20 @@ async function saveNote() {
 
 saveNoteBtn.onclick = saveNote;
 noteContent.oninput = renderPreview;
-// Eliminado toggleEditorBtn.onclick
+
+// Toggle editor/preview
+toggleViewBtn.onclick = function() {
+  if (preview.style.display === 'none') {
+    preview.style.display = '';
+    noteContent.style.display = 'none';
+    toggleViewBtn.textContent = 'Editar';
+  } else {
+    preview.style.display = 'none';
+    noteContent.style.display = '';
+    toggleViewBtn.textContent = 'Vista previa';
+  }
+};
+
 noteTitle.oninput = () => {
   // Renombrar archivo (no soportado nativamente por File System Access API)
 };
@@ -94,37 +108,14 @@ function renderPreview() {
     };
   });
 
-  // Doble clic en el preview: transformar el preview en el editor
-  preview.ondblclick = function(e) {
-    preview.style.display = 'none';
-    noteContent.style.display = '';
-    noteContent.focus();
-    // Opcional: posicionar el cursor en la línea clicada
-    let clickedElem = e.target;
-    let clickedText = clickedElem.innerText || clickedElem.textContent || '';
-    let allLines = noteContent.value.split('\n');
-    let idx = allLines.findIndex(line => line.trim() === clickedText.trim());
-    if (idx >= 0) {
-      let pos = 0;
-      for (let i = 0; i < idx; i++) pos += allLines[i].length + 1;
-      noteContent.setSelectionRange(pos, pos);
-    }
-  };
-
   // Doble clic en el preview: mostrar editor y posicionar cursor
   preview.ondblclick = function(e) {
-    // Obtener el texto clicado
     let clickedElem = e.target;
-    // Buscar el texto dentro del elemento clicado
     let clickedText = clickedElem.innerText || clickedElem.textContent || '';
-    // Buscar la posición en el texto original
     let allLines = noteContent.value.split('\n');
     let idx = allLines.findIndex(line => line.trim() === clickedText.trim());
-    // Mostrar editor y ocultar preview
     noteContent.style.display = '';
     preview.style.display = 'none';
-    toggleEditorBtn.textContent = 'Ocultar editor';
-    // Posicionar el cursor si se encontró la línea
     if (idx >= 0) {
       let pos = 0;
       for (let i = 0; i < idx; i++) pos += allLines[i].length + 1;

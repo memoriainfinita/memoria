@@ -50,7 +50,7 @@
 
 ## History
 
-- **2026-04-25**: State reestructurado formato animus. Codebase: ~60% Phase 1, ~50% Phase 2, ~40% Phase 3. Skill animus replicada a `.copilot/skills/animus`.
+- **2026-04-25**: State reestructurado formato animus. Codebase: ~60% Phase 1, ~50% Phase 2, ~40% Phase 3. Skill animus replicada a `.copilot/skills/animus`. Bugs corregidos: duplicación ondblclick, referencia toggleEditorBtn huérfana, botón toggle editor/preview añadido.
 - **2026-01-23**: Project initialized.
 
 ---
@@ -62,3 +62,6 @@
 - [ ] Delete file con confirmación
 - [ ] Create folder
 - [ ] Drag-drop
+- [x] Bug: duplicación ondblclick en app.js
+- [x] Bug: referencia toggleEditorBtn huérfana
+- [x] Bug: sin indicador toggle editor/preview
