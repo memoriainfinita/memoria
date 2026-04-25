@@ -50,7 +50,7 @@
 
 ## History
 
-- **2026-04-25**: State reestructurado formato animus. Codebase: ~60% Phase 1, ~50% Phase 2, ~40% Phase 3. Skill animus replicada a `.copilot/skills/animus`.
+- **2026-04-25**: State reestructurado formato animus. Skill animus replicada a `.copilot/skills/animus`. Codebase: ~60% Phase 1, ~50% Phase 2, ~40% Phase 3.
 - **2026-01-23**: Project initialized.
 
 ---
