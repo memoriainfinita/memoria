@@ -43,7 +43,7 @@
 
 ## Preferences
 
-- **UI:** Tema claro (body #f7f7f7, sidebar #fff, header oscuro #222) — objetivo dark theme pendiente
+- **UI:** Dark theme unix/vim aesthetic (CSS variables: --bg #1e1e1e, --accent #569cd6) — implemented 2026-05-31
 - **Editor:** Markdown plain-text, preview separate
 - **Navigation:** Tree-first (not journal)
 - **Sync:** Local-first, no cloud v1
