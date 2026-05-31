@@ -2,8 +2,6 @@ const textarea = document.getElementById('note-content');
 const preview = document.getElementById('preview');
 const toggleBtn = document.getElementById('toggle-view');
 
-let _editing = false;
-
 export function openInEditor(content) {
   textarea.value = content;
   showPreview();
@@ -14,7 +12,6 @@ export function getContent() {
 }
 
 export function showEditor() {
-  _editing = true;
   textarea.hidden = false;
   preview.style.display = 'none';
   toggleBtn.textContent = 'Vista previa';
@@ -22,14 +19,9 @@ export function showEditor() {
 }
 
 export function showPreview() {
-  _editing = false;
   textarea.hidden = true;
   preview.style.display = '';
   toggleBtn.textContent = 'Editar';
-}
-
-export function isEditing() {
-  return _editing;
 }
 
 export function jumpToLine(targetText) {
