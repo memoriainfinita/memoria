@@ -59,6 +59,9 @@
   </header>
   <main>
     <aside id="sidebar">
+      <div id="sidebar-actions">
+        <button id="new-file-btn" title="Nuevo archivo en carpeta raíz">+ archivo</button>
+      </div>
       <ul id="tree"></ul>
     </aside>
     <section id="content">
@@ -181,8 +184,10 @@ main { display: flex; flex: 1; overflow: hidden; }
   flex-shrink: 0;
 }
 
+#sidebar-actions { padding: 0.3em 0.4em; border-bottom: 1px solid var(--border); margin-bottom: 0.2em; }
+#new-file-btn { font-size: 0.78em; padding: 0.15em 0.5em; width: 100%; text-align: left; }
+
 #tree, #tree ul { list-style: none; padding-left: 0.8em; }
-#tree > ul { padding-left: 0; }
 
 #tree li { line-height: 1.6; }
 
@@ -536,16 +541,7 @@ export function findDirHandleForFile(rootNode, filename) {
 }
 ```
 
-- [ ] **Step 2: Verify module loads**
-
-Create a temporary `app.js` with:
-```js
-import { selectFolder } from './modules/fileSystem.js';
-console.log('fileSystem loaded', typeof selectFolder);
-```
-Open `index.html` in Chrome. Open DevTools console. Expected: `fileSystem loaded function`. No errors.
-
-- [ ] **Step 3: Commit**
+- [ ] **Step 2: Commit**
 
 ```bash
 git add modules/fileSystem.js
@@ -564,11 +560,9 @@ git commit -m "feat: add fileSystem module"
 ```js
 export function renderTree(rootNode, container, callbacks) {
   container.innerHTML = '';
-  const ul = document.createElement('ul');
   for (const child of rootNode.children) {
-    ul.appendChild(_node(child, rootNode.handle, callbacks));
+    container.appendChild(_node(child, rootNode.handle, callbacks));
   }
-  container.appendChild(ul);
 }
 
 function _node(node, parentDirHandle, cb) {
@@ -945,10 +939,18 @@ function _renderTabs() {
 async function _requestClose(idx) {
   const tab = state.tabs[idx];
   if (tab.dirty && !confirm('Cerrar "' + tab.name + '" sin guardar?')) return;
+  // Save active tab content to state before splice
+  if (state.activeTab >= 0 && state.tabs[state.activeTab]) {
+    state.tabs[state.activeTab].content = getContent();
+  }
   state.tabs.splice(idx, 1);
-  const newActive = Math.min(state.activeTab, state.tabs.length - 1);
+  let newActive;
+  if (state.tabs.length === 0) newActive = -1;
+  else if (state.activeTab === idx) newActive = Math.min(idx, state.tabs.length - 1);
+  else if (state.activeTab > idx) newActive = state.activeTab - 1;
+  else newActive = state.activeTab;
   state.activeTab = -1;
-  if (state.tabs.length > 0) {
+  if (newActive >= 0) {
     _switchTab(newActive);
   } else {
     openInEditor('');
@@ -1007,10 +1009,19 @@ searchEl.oninput = () => {
 
 // --- File operations ---
 async function _deleteFile(dirHandle, name) {
-  if (!confirm('Eliminar "' + name + '" definitivamente?')) return;
+  // Note: confirm dialog already shown in tree.js before calling this
   await deleteEntry(dirHandle, name);
   const idx = state.tabs.findIndex(t => t.name === name.replace('.md', ''));
-  if (idx >= 0) { state.tabs.splice(idx, 1); state.activeTab = Math.max(0, idx - 1); }
+  if (idx >= 0) {
+    state.tabs.splice(idx, 1);
+    if (state.activeTab === idx) {
+      state.activeTab = -1;
+      if (state.tabs.length > 0) _switchTab(Math.max(0, idx - 1));
+      else { openInEditor(''); previewEl.innerHTML = ''; backlinksEl.innerHTML = ''; }
+    } else if (state.activeTab > idx) {
+      state.activeTab--;
+    }
+  }
   state.tree = await buildTree(state.dirHandle);
   state.searchIndex = await buildIndex(state.tree);
   _refreshTree();
@@ -1030,6 +1041,13 @@ async function _newDir(dirHandle, name) {
   state.tree = await buildTree(state.dirHandle);
   _refreshTree();
 }
+
+// New file at root (for flat vaults with no subfolders)
+document.getElementById('new-file-btn').onclick = () => {
+  if (!state.dirHandle) return;
+  const name = prompt('Nombre del archivo (sin .md):');
+  if (name && name.trim()) _newFile(state.dirHandle, name.trim());
+};
 
 // --- Keyboard shortcuts ---
 document.addEventListener('keydown', (e) => {
@@ -1189,7 +1207,6 @@ async function _moveFile(filename, targetDirHandle, targetDirName) {
   const newHandle = await createFile(targetDirHandle, filename);
   await writeFile(newHandle, content);
   // Find parent dir of source and delete original
-  const { findDirHandleForFile } = await import('./modules/fileSystem.js');
   const srcDirHandle = findDirHandleForFile(state.tree, filename);
   if (srcDirHandle) await deleteEntry(srcDirHandle, filename);
   // Close tab for moved file and reopen from new location
