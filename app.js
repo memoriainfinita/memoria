@@ -203,11 +203,16 @@ async function _moveFile(filename, targetDirHandle, targetDirName) {
   const srcDirHandle = findDirHandleForFile(state.tree, filename);
   if (srcDirHandle) await deleteEntry(srcDirHandle, filename);
   const tabIdx = state.tabs.findIndex(t => t.name === filename.replace('.md', ''));
-  if (tabIdx >= 0) state.tabs.splice(tabIdx, 1);
+  if (tabIdx >= 0) {
+    state.tabs.splice(tabIdx, 1);
+    if (state.activeTab === tabIdx) state.activeTab = -1;
+    else if (state.activeTab > tabIdx) state.activeTab--;
+  }
   state.tree = await buildTree(state.dirHandle);
   state.searchIndex = await buildIndex(state.tree);
   _refreshTree();
   _renderTabs();
+  if (state.activeTab < 0 && state.tabs.length > 0) _switchTab(0);
 }
 
 // New file at root (for flat vaults with no subfolders)
@@ -280,3 +285,4 @@ window.addEventListener('focus', async () => {
 
 // --- Init ---
 _setupAutosave();
+window.addEventListener('beforeunload', () => clearInterval(_autosaveTimer));
