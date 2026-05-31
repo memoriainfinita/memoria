@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memoria</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <button id="sidebar-toggle" class="sidebar-toggle" title="Menú">&#9776;</button>
+    <span class="logo">Memoria</span>
+    <button id="open-folder" title="Abrir carpeta de notas">Abrir carpeta</button>
+    <input id="search" type="text" placeholder="Buscar... (Ctrl+F)" autocomplete="off">
+    <button id="settings-btn" title="Ajustes">Ajustes</button>
+  </header>
+  <main>
+    <aside id="sidebar">
+      <div id="sidebar-actions">
+        <button id="new-file-btn" title="Nuevo archivo en carpeta raíz">+ archivo</button>
+      </div>
+      <ul id="tree"></ul>
+    </aside>
+    <section id="content">
+      <div id="tab-bar"></div>
+      <div id="editor-area">
+        <button id="toggle-view" title="Alternar editor/vista previa">Editar</button>
+        <textarea id="note-content" placeholder="Escribe en Markdown..." hidden></textarea>
+        <div id="preview"></div>
+      </div>
+      <div id="backlinks"></div>
+    </section>
+  </main>
+  <div id="settings-panel" hidden>
+    <strong>Ajustes</strong>
+    <label><input type="checkbox" id="autosave-toggle"> Auto-guardar</label>
+    <label>Intervalo (s): <input type="number" id="autosave-interval" value="30" min="5" max="300"></label>
+    <button id="close-settings">Cerrar</button>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
