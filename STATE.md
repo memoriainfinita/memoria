@@ -19,17 +19,25 @@
 | Service | Status | Notes |
 |---------|--------|-------|
 | Open folder | ✅ | File System Access API |
-| List .md files | ✅ | Flat list, no folders (listNotes() flat only) |
-| Open note | ✅ | Loads content to editor |
-| Save note | ✅ | createWritable() |
-| Live preview | ✅ | marked library |
-| Wiki-links | ✅ | [[nota]] navigable |
-| Search by name | ✅ | Filter in sidebar |
-| Toggle editor/preview | ✅ | Button #toggle-view, ondblclick en preview → editor |
-| Rename note | ❌ | Campo visible pero no-op (FSA API no soporta rename) |
-| Tree UI | ❌ | Not implemented |
-| Multi-tab | ❌ | Not implemented |
-| Backlinks | ❌ | Not implemented |
+| Tree with nested folders | ✅ | Recursive, expandable, details/summary |
+| Open / save note | ✅ | createWritable() |
+| Multi-tab editing | ✅ | tabs.js |
+| Live preview | ✅ | marked CDN |
+| Toggle editor/preview | ✅ | editor.js |
+| Wiki-links [[nota]] | ✅ | Clickable, broken detection |
+| Backlinks | ✅ | links.js |
+| Search name + full-text | ✅ | search.js |
+| Create file (root + subfolders) | ✅ | sidebar button + context menu |
+| Create folder | ✅ | Context menu on tree folder |
+| Delete file | ✅ | Context menu on file |
+| Drag-drop file move | ✅ | HTML5 drag + confirmation |
+| Dark theme | ✅ | CSS variables |
+| Keyboard shortcuts | ✅ | Ctrl+S, Ctrl+F, Ctrl+W |
+| Auto-save | ✅ | Configurable, localStorage |
+| Settings panel | ✅ | Auto-save toggle + interval |
+| Responsive / mobile | ✅ | Sidebar toggle on <768px |
+| External file change detection | ✅ | Check on window focus |
+| Tooltips | ✅ | Native title attributes |
 
 ---
 
@@ -52,6 +60,7 @@
 
 ## History
 
+- **2026-05-31**: Full rewrite complete. Modular ES6 architecture (6 modules + app.js). All 40 v1 requirements implemented.
 - **2026-05-31**: State auditado contra codigo real. Corregido: dark theme no implementado (CSS es tema claro). Añadidos: toggle editor/preview (implementado), rename no-op (campo visible pero sin funcion). listNotes() confirmado flat-only.
 - **2026-04-25**: State reestructurado formato animus. Skill animus replicada a `.copilot/skills/animus`. Codebase: ~60% Phase 1, ~50% Phase 2, ~40% Phase 3.
 - **2026-01-23**: Project initialized.
@@ -60,8 +69,5 @@
 
 ## TODO
 
-- [ ] Tree UI con carpetas anidadas
-- [ ] Create new file (.md)
-- [ ] Delete file con confirmación
-- [ ] Create folder
-- [ ] Drag-drop
+- All 40 v1 requirements complete.
+- v2 ideas: see docs/superpowers/specs/2026-05-31-memoria-complete-design.md

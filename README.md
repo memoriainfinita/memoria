@@ -1,25 +1,29 @@
 # Memoria
 
-Memoria es una app web portable para tomar notas en archivos Markdown (.md), sin base de datos, con interfaz sencilla, edición y enlaces entre notas estilo Obsidian.
+App web local-first para gestionar notas en Markdown. Sin base de datos, sin servidor, sin instalación.
 
 ## Características
-- Abrir, editar y guardar archivos Markdown locales
-- Buscar notas por nombre/contenido
-- Enlaces entre notas usando sintaxis `[[nombre-nota]]`
-- Totalmente portable: solo necesitas copiar la carpeta
 
-## Estructura del proyecto
-- `index.html`: Interfaz principal
-- `app.js`: Lógica de la aplicación
-- `style.css`: Estilos
-- Carpeta con tus archivos `.md`
+- Abrir cualquier carpeta local como vault de notas
+- Árbol de carpetas expandible con soporte a subcarpetas anidadas
+- Editor Markdown con vista previa en tiempo real
+- Multi-tab: edita varias notas a la vez
+- Búsqueda por nombre y contenido completo
+- Wiki-links `[[nombre-nota]]` navegables, con detección de links rotos
+- Backlinks: muestra qué otras notas enlazan a la nota activa
+- Crear, eliminar y mover archivos y carpetas desde la interfaz
+- Dark theme estilo unix/vim
+- Auto-guardar configurable
+- Atajos de teclado: Ctrl+S, Ctrl+F, Ctrl+W
+- Responsive: funciona en móvil
 
 ## Uso
-Abre `index.html` en tu navegador. Usa la interfaz para gestionar tus notas Markdown.
+
+1. Abre `index.html` en Chrome o Edge
+2. Haz clic en "Abrir carpeta" y selecciona tu carpeta de notas
+3. Navega, edita, guarda
 
 ## Requisitos
-- Navegador moderno (Chrome, Edge, etc.)
-- Permisos para acceder a archivos locales
 
-## GitHub
-Usuario configurado: memoriainfinita
+- Chrome o Edge (usa File System Access API)
+- Sin instalación, sin npm, sin servidor
