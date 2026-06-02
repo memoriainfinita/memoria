@@ -291,8 +291,7 @@ function _renderCurrentNote() {
     const refs = findBacklinks(tab.name, state.searchIndex);
     renderBacklinks(refs, backlinksEl, _openFileByName);
   } else {
-    previewEl.innerHTML = '<pre class="plain-text"></pre>';
-    previewEl.querySelector('pre').textContent = tab.content;
+    _renderCode(previewEl, tab.content, tab.handle.name);
     backlinksEl.innerHTML = '';
   }
 }
