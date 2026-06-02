@@ -513,7 +513,14 @@ function _loadSettings() {
   } else {
     presetEl.value = preset; customEl.hidden = true; _applyFont(preset, false);
   }
+
+  document.getElementById('show-extensions-toggle').checked = localStorage.getItem('show-extensions') === 'true';
 }
+
+document.getElementById('show-extensions-toggle').onchange = (e) => {
+  localStorage.setItem('show-extensions', e.target.checked);
+  _refreshTree();
+};
 
 document.getElementById('setting-fontsize').oninput = (e) => {
   const size = e.target.value;

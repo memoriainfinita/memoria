@@ -65,7 +65,8 @@ function _node(node, parentDirHandle, cb) {
 
     const nameEl = document.createElement('span');
     nameEl.className = 'file-name';
-    nameEl.textContent = node.name.replace(/\.md$/, '');
+    const showExt = localStorage.getItem('show-extensions') === 'true';
+    nameEl.textContent = showExt ? node.name : node.name.replace(/\.\w+$/, '');
 
     span.appendChild(nameEl);
     li.appendChild(span);
@@ -100,6 +101,9 @@ async function _dirMenu(dirHandle, cb, x, y) {
 
 export function setActiveFile(container, filename) {
   container.querySelectorAll('.file-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.filename === filename + '.md');
+    const isMd = el.dataset.filename === filename + '.md';
+    const isOther = !isMd && el.dataset.filename === filename;
+    el.classList.toggle('active', isMd);
+    el.classList.toggle('active-other', isOther);
   });
 }
