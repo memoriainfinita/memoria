@@ -1,5 +1,23 @@
+import { showConfirm, showPrompt } from './modal.js';
+import { showContextMenu } from './contextmenu.js';
+
 export function renderTree(rootNode, container, callbacks) {
   container.innerHTML = '';
+
+  const rootZone = document.createElement('div');
+  rootZone.className = 'root-drop-zone';
+  rootZone.innerHTML = '<span class="root-slash">/ </span><span class="root-name">' + rootNode.handle.name + '</span>';
+  rootZone.ondragover  = (e) => { e.preventDefault(); e.stopPropagation(); rootZone.classList.add('drag-over'); };
+  rootZone.ondragleave = () => rootZone.classList.remove('drag-over');
+  rootZone.ondrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    rootZone.classList.remove('drag-over');
+    const filename = e.dataTransfer.getData('text/plain');
+    if (filename) callbacks.onMove(filename, rootNode.handle, 'raíz');
+  };
+  container.appendChild(rootZone);
+
   for (const child of rootNode.children) {
     container.appendChild(_node(child, rootNode.handle, callbacks));
   }
@@ -13,15 +31,15 @@ function _node(node, parentDirHandle, cb) {
     details.ontoggle = () => { node.expanded = details.open; };
     const summary = document.createElement('summary');
     summary.textContent = node.name;
-    summary.oncontextmenu = (e) => {
+    summary.oncontextmenu = async (e) => {
       e.preventDefault();
-      _dirMenu(node.handle, cb);
+      await _dirMenu(node.handle, cb, e.clientX, e.clientY);
     };
-    // Drop target
-    summary.ondragover = (e) => { e.preventDefault(); summary.style.background = 'var(--accent)'; summary.style.color = '#1e1e1e'; };
+    summary.ondragover  = (e) => { e.preventDefault(); e.stopPropagation(); summary.style.background = 'var(--accent)'; summary.style.color = '#1e1e1e'; };
     summary.ondragleave = () => { summary.style.background = ''; summary.style.color = ''; };
     summary.ondrop = (e) => {
       e.preventDefault();
+      e.stopPropagation();
       summary.style.background = '';
       summary.style.color = '';
       const filename = e.dataTransfer.getData('text/plain');
@@ -35,30 +53,47 @@ function _node(node, parentDirHandle, cb) {
   } else {
     const span = document.createElement('span');
     span.className = 'file-item';
-    span.textContent = node.name.replace('.md', '');
     span.dataset.filename = node.name;
     span.title = node.name;
-    span.onclick = () => cb.onFileClick(node.handle, node.name.replace('.md', ''));
-    span.oncontextmenu = (e) => {
-      e.preventDefault();
-      if (confirm('Eliminar "' + node.name + '"?')) cb.onDelete(parentDirHandle, node.name);
-    };
     span.draggable = true;
-    span.ondragstart = (e) => {
-      e.dataTransfer.setData('text/plain', node.name);
+    span.ondragstart = (e) => { e.dataTransfer.setData('text/plain', node.name); };
+    span.onclick = () => cb.onFileClick(node.handle, node.name.replace('.md', ''));
+    span.oncontextmenu = async (e) => {
+      e.preventDefault();
+      await _fileMenu(node, parentDirHandle, cb, e.clientX, e.clientY);
     };
+
+    const nameEl = document.createElement('span');
+    nameEl.className = 'file-name';
+    nameEl.textContent = node.name.replace(/\.md$/, '');
+
+    span.appendChild(nameEl);
     li.appendChild(span);
   }
   return li;
 }
 
-function _dirMenu(dirHandle, cb) {
-  const action = prompt('Crear en esta carpeta:\n1 = archivo .md\n2 = carpeta\n(Enter para cancelar)');
-  if (action === '1') {
-    const name = prompt('Nombre del archivo (sin .md):');
+async function _fileMenu(node, parentDirHandle, cb, x, y) {
+  const choice = await showContextMenu(x, y, [
+    { label: 'Duplicar', value: 'duplicate' },
+    { label: 'Eliminar', value: 'delete'    },
+  ]);
+  if (choice === 'duplicate') cb.onDuplicate(parentDirHandle, node.handle, node.name);
+  if (choice === 'delete') {
+    if (await showConfirm('Eliminar "' + node.name + '"?')) cb.onDelete(parentDirHandle, node.name);
+  }
+}
+
+async function _dirMenu(dirHandle, cb, x, y) {
+  const choice = await showContextMenu(x, y, [
+    { label: '+ Archivo .md', value: 'file' },
+    { label: '+ Carpeta',     value: 'dir'  },
+  ]);
+  if (choice === 'file') {
+    const name = await showPrompt('Nombre del archivo (sin .md):');
     if (name && name.trim()) cb.onCreateFile(dirHandle, name.trim());
-  } else if (action === '2') {
-    const name = prompt('Nombre de la carpeta:');
+  } else if (choice === 'dir') {
+    const name = await showPrompt('Nombre de la carpeta:');
     if (name && name.trim()) cb.onCreateDir(dirHandle, name.trim());
   }
 }

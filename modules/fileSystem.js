@@ -11,7 +11,7 @@ async function _walk(handle, isRoot = false) {
   for await (const [name, child] of handle.entries()) {
     if (child.kind === 'directory') {
       node.children.push(await _walk(child));
-    } else if (name.endsWith('.md')) {
+    } else if (/\.(md|markdown|mdx|txt|text|rst|org|html|htm|js|ts|jsx|tsx|css|scss|json|yaml|yml|toml|ini|xml|csv|log|py|sh|bat|ps1|rb|php|java|c|cpp|h|go|rs|swift|kt|sql)$/.test(name)) {
       node.children.push({ name, kind: 'file', handle: child });
     }
   }
@@ -56,7 +56,7 @@ export async function buildIndex(rootNode) {
 async function _indexNode(node, index) {
   if (node.kind === 'file') {
     const content = await readFile(node.handle);
-    index.push({ name: node.name.replace('.md', ''), handle: node.handle, content });
+    index.push({ name: node.name.replace(/\.md$/, ''), handle: node.handle, content });
   } else {
     for (const child of node.children) await _indexNode(child, index);
   }

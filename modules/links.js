@@ -4,7 +4,8 @@ export function renderLinks(md, allNames, container, onLinkClick, onDblClick) {
     const cls = exists ? 'wiki-link' : 'wiki-link broken';
     return `<a href="#" class="${cls}" data-note="${name}">[[${name}]]</a>`;
   });
-  container.innerHTML = marked.parse(processed);
+  const noFront = processed.replace(/^---\n[\s\S]*?\n---\n?/, '');
+  container.innerHTML = marked.parse(noFront);
   container.querySelectorAll('a.wiki-link:not(.broken)').forEach(a => {
     a.onclick = (e) => { e.preventDefault(); onLinkClick(a.dataset.note); };
   });

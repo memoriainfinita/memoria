@@ -1,6 +1,6 @@
 # Memoria - State
 
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-02
 
 ---
 
@@ -10,7 +10,8 @@
 - **API:** File System Access API (Chromium only)
 - **Deployment:** Static web app (index.html)
 - **Browser:** Chrome/Edge (showDirectoryPicker)
-- **File Format:** .md only
+- **File Format:** .md, .txt, .html, .js, .ts, .css, .json, .yaml, .yml, .toml, .ini, .xml, .csv, .log, .py, .sh, .bat, .ps1, .rb, .php, .java, .c, .cpp, .h, .go, .rs, .swift, .kt, .sql, .rst, .org
+- **Dev server:** python -m http.server 8080 (required — ES6 modules blocked on file://)
 
 ---
 
@@ -32,12 +33,22 @@
 | Delete file | ✅ | Context menu on file |
 | Drag-drop file move | ✅ | HTML5 drag + confirmation |
 | Dark theme | ✅ | CSS variables |
-| Keyboard shortcuts | ✅ | Ctrl+S, Ctrl+F, Ctrl+W |
+| Keyboard shortcuts | ✅ | Ctrl+S/F/W/B/N/E — configurable desde Settings |
 | Auto-save | ✅ | Configurable, localStorage |
-| Settings panel | ✅ | Auto-save toggle + interval |
-| Responsive / mobile | ✅ | Sidebar toggle on <768px |
+| Settings panel | ✅ | Fondo, acento, fuente, tamaño texto, autosave, atajos |
+| Responsive / mobile | ✅ | Sidebar toggle siempre visible |
 | External file change detection | ✅ | Check on window focus |
 | Tooltips | ✅ | Native title attributes |
+| Session persistence | ✅ | IndexedDB (folder handle) + localStorage (tabs, width) |
+| Sidebar resizable | ✅ | Drag handle, persiste ancho |
+| Custom modal | ✅ | Reemplaza alert/confirm/prompt del sistema |
+| Context menu | ✅ | Right-click archivos (duplicar/eliminar) y carpetas (crear) |
+| Duplicate file | ✅ | Via context menu, sufijo -copia |
+| Move to root | ✅ | Drag & drop a zona raíz en sidebar |
+| Frontmatter strip | ✅ | YAML frontmatter oculto en preview, intacto en editor |
+| Plain text files | ✅ | Archivos no-.md se muestran sin render |
+| Theme customization | ✅ | Color fondo+acento (dark/light adapt), fuente, tamaño |
+| Save button | ✅ | Header, se activa (azul) cuando hay cambios sin guardar |
 
 ---
 
@@ -60,6 +71,7 @@
 
 ## History
 
+- **2026-06-02**: Major UX session. Added: sidebar to search+open-folder, folder visuals (▶/▼), custom modal system, context menus (right-click), save button, sidebar toggle+resize+persist, session persistence (IndexedDB), settings expansion (theme colors, font, font-size), configurable keybindings (Ctrl+B/N/E added), frontmatter strip in preview, plain text file support (20+ extensions), duplicate file, move-to-root drop zone, fixed same-dir move bug.
 - **2026-05-31**: Full rewrite complete. Modular ES6 architecture (6 modules + app.js). All 40 v1 requirements implemented.
 - **2026-05-31**: State auditado contra codigo real. Corregido: dark theme no implementado (CSS es tema claro). Añadidos: toggle editor/preview (implementado), rename no-op (campo visible pero sin funcion). listNotes() confirmado flat-only.
 - **2026-04-25**: State reestructurado formato animus. Skill animus replicada a `.copilot/skills/animus`. Codebase: ~60% Phase 1, ~50% Phase 2, ~40% Phase 3.

@@ -10,17 +10,23 @@
   <header>
     <button id="sidebar-toggle" class="sidebar-toggle" title="Menú">&#9776;</button>
     <span class="logo">Memoria</span>
-    <button id="open-folder" title="Abrir carpeta de notas">Abrir carpeta</button>
-    <input id="search" type="text" placeholder="Buscar... (Ctrl+F)" title="Buscar por nombre y contenido (Ctrl+F)" autocomplete="off">
+    <button id="save-btn" title="Guardar (Ctrl+S)" disabled>Guardar</button>
     <button id="settings-btn" title="Ajustes">Ajustes</button>
   </header>
   <main>
     <aside id="sidebar">
       <div id="sidebar-actions">
+        <button id="open-folder" title="Abrir carpeta de notas">Abrir carpeta</button>
+        <div id="reconnect-bar" hidden>
+          <span id="reconnect-name"></span>
+          <button id="reconnect-btn">Reconectar</button>
+        </div>
+        <input id="search" type="text" placeholder="Buscar... (Ctrl+F)" title="Buscar por nombre y contenido (Ctrl+F)" autocomplete="off">
         <button id="new-file-btn" title="Nuevo archivo en carpeta raíz">+ archivo</button>
       </div>
       <ul id="tree"></ul>
     </aside>
+    <div id="sidebar-resize"></div>
     <section id="content">
       <div id="tab-bar"></div>
       <div id="editor-area">
@@ -31,12 +37,60 @@
       <div id="backlinks"></div>
     </section>
   </main>
+
   <div id="settings-panel" hidden>
     <strong>Ajustes</strong>
-    <label><input type="checkbox" id="autosave-toggle"> Auto-guardar</label>
-    <label>Intervalo (s): <input type="number" id="autosave-interval" value="30" min="5" max="300"></label>
+    <div class="settings-section">
+      <span class="settings-label">Apariencia</span>
+      <label>Fondo <input type="color" id="setting-bg" value="#1e1e1e"></label>
+      <label>Acento <input type="color" id="setting-accent" value="#569cd6"></label>
+      <label>Tamaño texto
+        <div class="size-control">
+          <input type="range" id="setting-fontsize" min="12" max="22" step="1" value="16">
+          <span id="setting-fontsize-label">16px</span>
+        </div>
+      </label>
+      <label>Fuente
+        <select id="setting-font-preset">
+          <option value="'Consolas', 'Menlo', monospace">Consolas (mono)</option>
+          <option value="system-ui, sans-serif">Sistema (sans)</option>
+          <option value="Georgia, serif">Georgia (serif)</option>
+          <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+          <option value="'Inter', sans-serif">Inter</option>
+          <option value="custom">Personalizada...</option>
+        </select>
+      </label>
+      <input id="setting-font-custom" type="text" placeholder="Nombre de fuente" hidden>
+    </div>
+    <div class="settings-section">
+      <span class="settings-label">Auto-guardar</span>
+      <label><input type="checkbox" id="autosave-toggle"> Activado</label>
+      <label>Intervalo (s): <input type="number" id="autosave-interval" value="30" min="5" max="300"></label>
+    </div>
+    <div class="settings-section">
+      <span class="settings-label">Atajos de teclado</span>
+      <div class="shortcut-row"><span>Guardar</span><input class="key-input" data-action="save" readonly></div>
+      <div class="shortcut-row"><span>Buscar</span><input class="key-input" data-action="search" readonly></div>
+      <div class="shortcut-row"><span>Cerrar pestaña</span><input class="key-input" data-action="closeTab" readonly></div>
+      <div class="shortcut-row"><span>Sidebar</span><input class="key-input" data-action="toggleSidebar" readonly></div>
+      <div class="shortcut-row"><span>Nuevo archivo</span><input class="key-input" data-action="newFile" readonly></div>
+      <div class="shortcut-row"><span>Editor/Preview</span><input class="key-input" data-action="toggleEditor" readonly></div>
+    </div>
     <button id="close-settings">Cerrar</button>
   </div>
+
+  <div id="modal-overlay" hidden>
+    <div id="modal-box">
+      <p id="modal-message"></p>
+      <input id="modal-input" type="text" hidden>
+      <div id="modal-actions">
+        <button id="modal-btn1">Aceptar</button>
+        <button id="modal-btn2" hidden></button>
+        <button id="modal-cancel">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script type="module" src="app.js"></script>
 </body>
