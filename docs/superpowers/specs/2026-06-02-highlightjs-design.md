@@ -23,6 +23,14 @@ Add to `index.html` before the marked `<script>`:
 
 Theme: `github-dark` — consistent with current dark theme (`--bg #1e1e1e`, `--accent #569cd6`).
 
+The theme applies its own background (`#0d1117`) to `pre code.hljs`. To keep compatibility with the user-customizable `--bg`, add to `style.css`:
+
+```css
+pre code.hljs { background: transparent; }
+```
+
+This lets the `<pre>` inherit the app background while token colors remain.
+
 ---
 
 ## Architecture
@@ -71,7 +79,11 @@ function _renderCode(container, content, filename) {
   const pre = document.createElement('pre');
   const code = document.createElement('code');
   if (lang) {
-    code.innerHTML = hljs.highlight(content, { language: lang }).value;
+    try {
+      code.innerHTML = hljs.highlight(content, { language: lang }).value;
+    } catch (_) {
+      code.textContent = content;
+    }
   } else {
     code.textContent = content;
   }
@@ -79,6 +91,16 @@ function _renderCode(container, content, filename) {
   container.innerHTML = '';
   container.appendChild(pre);
 }
+```
+
+---
+
+### style.css
+
+Add one rule:
+
+```css
+pre code.hljs { background: transparent; }
 ```
 
 ---
