@@ -23,9 +23,23 @@
 ### Task 1: Add Highlight.js CDN to index.html
 
 **Files:**
-- Modify: `index.html:95` (the line with the marked CDN script)
+- Modify: `index.html` — `<head>` for the CSS link, `<body>` for the JS script
 
-- [ ] **Step 1: Add CDN tags**
+- [ ] **Step 1: Add the CSS link in `<head>`**
+
+In `index.html`, replace:
+```html
+  <link rel="stylesheet" href="style.css">
+</head>
+```
+With:
+```html
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+</head>
+```
+
+- [ ] **Step 2: Add the JS script in `<body>`**
 
 In `index.html`, replace:
 ```html
@@ -33,7 +47,6 @@ In `index.html`, replace:
 ```
 With:
 ```html
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 ```
@@ -155,7 +168,7 @@ git commit -m "feat: add EXT_LANG map and _renderCode helper"
 ### Task 4: Wire _renderCode into _renderCurrentNote
 
 **Files:**
-- Modify: `app.js:248-251` (the `else` block inside `_renderCurrentNote`)
+- Modify: `app.js` — the `else` block inside `_renderCurrentNote()` (search for `previewEl.innerHTML = '<pre class="plain-text">`)
 
 - [ ] **Step 1: Replace the else block**
 
@@ -201,7 +214,7 @@ git commit -m "feat: wire highlight.js into _renderCurrentNote"
 ### Task 5: Wire _renderCode into live update (oninput)
 
 **Files:**
-- Modify: `app.js:276-279` (the `else` block inside `noteContent.oninput`)
+- Modify: `app.js` — the `else` block inside `noteContent.oninput` (search for `previewEl.querySelector('pre.plain-text')`)
 
 - [ ] **Step 1: Replace the else block**
 
