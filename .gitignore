@@ -16,3 +16,7 @@ Thumbs.db
 # Backup
 *~
 *.bak
+
+# Dev scripts
+server-start.bat
+server-stop.bat
