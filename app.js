@@ -236,6 +236,51 @@ async function _requestClose(idx) {
   }
 }
 
+// --- Highlight.js ---
+const EXT_LANG = {
+  js: 'javascript', mjs: 'javascript', cjs: 'javascript',
+  ts: 'typescript',
+  py: 'python',
+  sh: 'bash', bash: 'bash',
+  ps1: 'powershell',
+  bat: 'dos',
+  rb: 'ruby',
+  php: 'php',
+  java: 'java',
+  c: 'c', h: 'c',
+  cpp: 'cpp', cc: 'cpp',
+  go: 'go',
+  rs: 'rust',
+  swift: 'swift',
+  kt: 'kotlin',
+  sql: 'sql',
+  json: 'json',
+  yaml: 'yaml', yml: 'yaml',
+  toml: 'toml',
+  xml: 'xml',
+  css: 'css',
+  html: 'xml',
+};
+
+function _renderCode(container, content, filename) {
+  const ext = filename.split('.').pop().toLowerCase();
+  const lang = EXT_LANG[ext];
+  const pre = document.createElement('pre');
+  const code = document.createElement('code');
+  if (lang) {
+    try {
+      code.innerHTML = hljs.highlight(content, { language: lang }).value;
+    } catch (_) {
+      code.textContent = content;
+    }
+  } else {
+    code.textContent = content;
+  }
+  pre.appendChild(code);
+  container.innerHTML = '';
+  container.appendChild(pre);
+}
+
 // --- Render current note ---
 function _renderCurrentNote() {
   if (state.activeTab < 0) return;
