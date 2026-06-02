@@ -561,6 +561,9 @@ main { display: flex; flex: 1; overflow: hidden; }
   padding: 0;
 }
 
+/* Prevent hljs theme from overriding the app's customizable background */
+pre code.hljs { background: transparent; }
+
 /* Context menu */
 #context-menu {
   position: fixed;
