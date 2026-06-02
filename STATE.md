@@ -47,6 +47,7 @@
 | Move to root | ✅ | Drag & drop a zona raíz en sidebar |
 | Frontmatter strip | ✅ | YAML frontmatter oculto en preview, intacto en editor |
 | Plain text files | ✅ | Archivos no-.md se muestran sin render |
+| Syntax highlighting (non-.md) | ✅ | highlight.js 11.9.0, lang by extension |
 | Theme customization | ✅ | Color fondo+acento (dark/light adapt), fuente, tamaño |
 | Save button | ✅ | Header, se activa (azul) cuando hay cambios sin guardar |
 
@@ -71,6 +72,7 @@
 
 ## History
 
+- **2026-06-03**: Syntax highlighting for non-.md files via highlight.js 11.9.0 CDN. Extension→language map in app.js. github-dark theme, transparent background override in style.css.
 - **2026-06-02b**: Sidebar active highlight para archivos no-.md (clase `active-other`, accent al 30%). Toggle "Mostrar extensiones" en Settings (localStorage `show-extensions`), re-renderiza árbol al cambiar.
 - **2026-06-02**: Major UX session. Added: sidebar to search+open-folder, folder visuals (▶/▼), custom modal system, context menus (right-click), save button, sidebar toggle+resize+persist, session persistence (IndexedDB), settings expansion (theme colors, font, font-size), configurable keybindings (Ctrl+B/N/E added), frontmatter strip in preview, plain text file support (20+ extensions), duplicate file, move-to-root drop zone, fixed same-dir move bug.
 - **2026-05-31**: Full rewrite complete. Modular ES6 architecture (6 modules + app.js). All 40 v1 requirements implemented.
