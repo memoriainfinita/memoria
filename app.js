@@ -318,8 +318,7 @@ noteContent.oninput = () => {
     const allNames = state.searchIndex.map(e => e.name);
     renderLinks(getContent(), allNames, previewEl, _openFileByName, (text) => jumpToLine(text));
   } else {
-    const pre = previewEl.querySelector('pre.plain-text');
-    if (pre) pre.textContent = getContent();
+    _renderCode(previewEl, getContent(), state.tabs[state.activeTab].handle.name);
   }
 };
 
