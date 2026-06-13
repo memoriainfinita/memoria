@@ -99,4 +99,6 @@ last_updated: 2026-06-13
 ### Pendientes (2026-06-13)
 - [x] Mostrar en el árbol los archivos no soportados (p.ej. imágenes), visibles aunque no se puedan abrir, para que las carpetas con solo imágenes no aparezcan vacías. Hecho 2026-06-13.
 - [x] Menú contextual en pestañas (botón derecho): cerrar todas, cerrar las de la izquierda, cerrar las de la derecha (estilo Chrome). Hecho 2026-06-13.
+- [ ] Revisar el diseño de la app. El minimalismo gusta, pero se ve poco profesional.
+- [ ] Previsualizar archivos que el navegador puede abrir de forma nativa (imágenes, vídeo, audio, etc.). Evaluar complejidad.
 - [x] Al abrir otra carpeta: avisar al usuario (con aviso reforzado si hay cambios sin guardar) y empezar limpio, cerrando las pestañas de la carpeta anterior. Hecho 2026-06-13.
