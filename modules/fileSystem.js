@@ -2,6 +2,15 @@ export async function selectFolder() {
   return window.showDirectoryPicker();
 }
 
+function isTextFile(name) {
+  if (/\.(md|txt|text|rst|org|html|htm|js|ts|jsx|tsx|css|scss|json|yaml|yml|toml|ini|xml|csv|log|py|sh|bat|ps1|rb|php|java|c|cpp|h|go|rs|swift|kt|sql)$/.test(name)) return true;
+  // Dotfiles sin extensión adicional: .gitignore, .env, .bashrc, .npmrc
+  if (/^\.[^.]+$/.test(name)) return true;
+  // Nombres conocidos sin extensión
+  if (/^(dockerfile|makefile|license|readme|changelog|authors|notice)$/i.test(name)) return true;
+  return false;
+}
+
 export async function buildTree(dirHandle) {
   return _walk(dirHandle, true);
 }
@@ -11,8 +20,8 @@ async function _walk(handle, isRoot = false) {
   for await (const [name, child] of handle.entries()) {
     if (child.kind === 'directory') {
       node.children.push(await _walk(child));
-    } else if (/\.(md|txt|text|rst|org|html|htm|js|ts|jsx|tsx|css|scss|json|yaml|yml|toml|ini|xml|csv|log|py|sh|bat|ps1|rb|php|java|c|cpp|h|go|rs|swift|kt|sql)$/.test(name)) {
-      node.children.push({ name, kind: 'file', handle: child });
+    } else {
+      node.children.push({ name, kind: 'file', handle: child, supported: isTextFile(name) });
     }
   }
   node.children.sort((a, b) => {
@@ -56,6 +65,7 @@ export async function buildIndex(rootNode) {
 
 async function _indexNode(node, index) {
   if (node.kind === 'file') {
+    if (node.supported === false) return;
     const content = await readFile(node.handle);
     index.push({ name: node.name.replace(/\.md$/, ''), handle: node.handle, content });
   } else {

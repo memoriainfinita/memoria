@@ -157,6 +157,7 @@ main { display: flex; flex: 1; overflow: hidden; }
 .file-item:hover { background: var(--bg-3); }
 .file-item.active { background: var(--accent); color: #1e1e1e; }
 .file-item.active-other { background: color-mix(in srgb, var(--accent) 30%, var(--bg-3)); color: var(--text); }
+.file-item.file-unsupported { color: var(--text-dim); cursor: default; font-style: italic; }
 
 /* Root drop zone */
 .root-drop-zone {

@@ -5,6 +5,7 @@ import { renderTabs } from './modules/tabs.js';
 import { searchFull, renderResults } from './modules/search.js';
 import { renderLinks, findBacklinks, renderBacklinks } from './modules/links.js';
 import { showAlert, showConfirm, showPrompt } from './modules/modal.js';
+import { showContextMenu } from './modules/contextmenu.js';
 import { dbGet, dbSet } from './modules/persist.js';
 
 // --- State ---
@@ -219,9 +220,53 @@ function _switchTab(idx) {
 }
 
 function _renderTabs() {
-  renderTabs(tabBarEl, state.tabs, state.activeTab, _switchTab, _requestClose);
+  renderTabs(tabBarEl, state.tabs, state.activeTab, _switchTab, _requestClose, _tabMenu);
   _updateSaveBtn();
   _savePersistState();
+}
+
+// --- Tab context menu ---
+async function _tabMenu(idx, x, y) {
+  const choice = await showContextMenu(x, y, [
+    { label: 'Cerrar',                value: 'close'  },
+    { label: 'Cerrar otras',          value: 'others' },
+    { label: 'Cerrar a la izquierda', value: 'left'   },
+    { label: 'Cerrar a la derecha',   value: 'right'  },
+  ]);
+  if (choice === 'close')  return _requestClose(idx);
+  if (choice === 'others') return _closeTabsKeeping([idx], idx);
+  if (choice === 'left')   return _closeTabsKeeping(state.tabs.map((_, i) => i).filter(i => i >= idx), idx);
+  if (choice === 'right')  return _closeTabsKeeping(state.tabs.map((_, i) => i).filter(i => i <= idx), idx);
+}
+
+// --- Close all tabs except a kept set (confirms unsaved) ---
+async function _closeTabsKeeping(keepIndices, focusIdx) {
+  const keep = new Set(keepIndices);
+  const toClose = state.tabs.filter((_, i) => !keep.has(i));
+  if (toClose.length === 0) return;
+  const dirtyCount = toClose.filter(t => t.dirty).length;
+  if (dirtyCount > 0 && !await showConfirm('Hay ' + dirtyCount + ' pestaña(s) con cambios sin guardar. Cerrarlas igualmente?')) return;
+  if (state.activeTab >= 0 && state.tabs[state.activeTab]) {
+    state.tabs[state.activeTab].content = getContent();
+  }
+  const activeRef = state.activeTab >= 0 ? state.tabs[state.activeTab] : null;
+  const focusRef  = state.tabs[focusIdx];
+  state.tabs = state.tabs.filter((_, i) => keep.has(i));
+  let newActive = activeRef && state.tabs.includes(activeRef)
+    ? state.tabs.indexOf(activeRef)
+    : state.tabs.indexOf(focusRef);
+  state.activeTab = -1;
+  if (newActive >= 0) {
+    _switchTab(newActive);
+  } else if (state.tabs.length > 0) {
+    _switchTab(0);
+  } else {
+    openInEditor('');
+    previewEl.innerHTML  = '';
+    backlinksEl.innerHTML= '';
+    setActiveFile(treeEl, '');
+    _renderTabs();
+  }
 }
 
 function _updateSaveBtn() {

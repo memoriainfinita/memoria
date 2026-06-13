@@ -1,9 +1,10 @@
-export function renderTabs(container, tabs, activeIdx, onSwitch, onClose) {
+export function renderTabs(container, tabs, activeIdx, onSwitch, onClose, onMenu) {
   container.innerHTML = '';
   tabs.forEach((tab, i) => {
     const div = document.createElement('div');
     div.className = 'tab' + (i === activeIdx ? ' active' : '') + (tab.dirty ? ' dirty' : '');
     div.onclick = () => onSwitch(i);
+    div.oncontextmenu = (e) => { e.preventDefault(); onMenu(i, e.clientX, e.clientY); };
 
     const name = document.createElement('span');
     name.className = 'tab-name';

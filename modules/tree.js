@@ -1,4 +1,4 @@
-import { showConfirm, showPrompt } from './modal.js';
+import { showConfirm, showPrompt, showAlert } from './modal.js';
 import { showContextMenu } from './contextmenu.js';
 
 export function renderTree(rootNode, container, callbacks) {
@@ -51,13 +51,18 @@ function _node(node, parentDirHandle, cb) {
     details.appendChild(ul);
     li.appendChild(details);
   } else {
+    const unsupported = node.supported === false;
     const span = document.createElement('span');
-    span.className = 'file-item';
+    span.className = 'file-item' + (unsupported ? ' file-unsupported' : '');
     span.dataset.filename = node.name;
     span.title = node.name;
-    span.draggable = true;
-    span.ondragstart = (e) => { e.dataTransfer.setData('text/plain', node.name); };
-    span.onclick = () => cb.onFileClick(node.handle, node.name.replace('.md', ''));
+    if (unsupported) {
+      span.onclick = () => showAlert('Tipo de archivo no soportado: ' + node.name);
+    } else {
+      span.draggable = true;
+      span.ondragstart = (e) => { e.dataTransfer.setData('text/plain', node.name); };
+      span.onclick = () => cb.onFileClick(node.handle, node.name.replace('.md', ''));
+    }
     span.oncontextmenu = async (e) => {
       e.preventDefault();
       await _fileMenu(node, parentDirHandle, cb, e.clientX, e.clientY);
@@ -75,10 +80,10 @@ function _node(node, parentDirHandle, cb) {
 }
 
 async function _fileMenu(node, parentDirHandle, cb, x, y) {
-  const choice = await showContextMenu(x, y, [
-    { label: 'Duplicar', value: 'duplicate' },
-    { label: 'Eliminar', value: 'delete'    },
-  ]);
+  const items = node.supported === false
+    ? [{ label: 'Eliminar', value: 'delete' }]
+    : [{ label: 'Duplicar', value: 'duplicate' }, { label: 'Eliminar', value: 'delete' }];
+  const choice = await showContextMenu(x, y, items);
   if (choice === 'duplicate') cb.onDuplicate(parentDirHandle, node.handle, node.name);
   if (choice === 'delete') {
     if (await showConfirm('Eliminar "' + node.name + '"?')) cb.onDelete(parentDirHandle, node.name);
