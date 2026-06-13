@@ -51,10 +51,3 @@ export const showPrompt = async (msg, placeholder = '') => {
   const r = await _open(msg, { input: true, placeholder, cancel: true });
   return r === null ? null : r;
 };
-
-export const showChoice = async (msg, opt1, opt2) => {
-  const r = await _open(msg, { btn1: opt1, btn2: opt2, cancel: true });
-  if (r === 'ok')   return 1;
-  if (r === 'btn2') return 2;
-  return null;
-};

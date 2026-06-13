@@ -35,7 +35,7 @@ function _node(node, parentDirHandle, cb) {
       e.preventDefault();
       await _dirMenu(node.handle, cb, e.clientX, e.clientY);
     };
-    summary.ondragover  = (e) => { e.preventDefault(); e.stopPropagation(); summary.style.background = 'var(--accent)'; summary.style.color = '#1e1e1e'; };
+    summary.ondragover  = (e) => { e.preventDefault(); e.stopPropagation(); summary.style.background = 'var(--accent)'; summary.style.color = 'var(--bg)'; };
     summary.ondragleave = () => { summary.style.background = ''; summary.style.color = ''; };
     summary.ondrop = (e) => {
       e.preventDefault();

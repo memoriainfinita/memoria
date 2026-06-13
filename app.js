@@ -85,10 +85,18 @@ document.addEventListener('mouseup', () => {
 
 // --- Folder open ---
 openFolderBtn.onclick = async () => {
+  if (state.tabs.length > 0) {
+    const dirty = state.tabs.filter(t => t.dirty).length;
+    const msg = dirty > 0
+      ? `Hay ${dirty} pestaña(s) con cambios sin guardar. Abrir otra carpeta las cerrará y perderás los cambios. ¿Continuar?`
+      : 'Abrir otra carpeta cerrará las pestañas actuales. ¿Continuar?';
+    if (!await showConfirm(msg)) return;
+  }
   try {
     openFolderBtn.textContent = 'Cargando...';
     openFolderBtn.disabled = true;
     const handle = await selectFolder();
+    _closeAllTabs();
     await _loadFolder(handle, true);
   } catch (e) {
     if (e.name !== 'AbortError') await showAlert('Error: ' + e.message);
@@ -97,6 +105,16 @@ openFolderBtn.onclick = async () => {
     openFolderBtn.disabled = false;
   }
 };
+
+// --- Close all tabs (clears editor + preview) ---
+function _closeAllTabs() {
+  state.tabs = [];
+  state.activeTab = -1;
+  openInEditor('');
+  previewEl.innerHTML   = '';
+  backlinksEl.innerHTML = '';
+  _renderTabs();
+}
 
 // --- Load folder (shared by open + restore) ---
 async function _loadFolder(handle, saveHandle = false) {
@@ -176,7 +194,7 @@ async function _openFile(handle, name) {
   const file = await handle.getFile();
   state.lastModified[name] = file.lastModified;
   const content = await file.text();
-  const isMd = /\.(md|markdown|mdx)$/.test(handle.name);
+  const isMd = /\.md$/.test(handle.name);
   state.tabs.push({ handle, name, content, dirty: false, isMd });
   _switchTab(state.tabs.length - 1);
 }
@@ -238,8 +256,8 @@ async function _requestClose(idx) {
 
 // --- Highlight.js ---
 const EXT_LANG = {
-  js: 'javascript', mjs: 'javascript', cjs: 'javascript',
-  ts: 'typescript',
+  js: 'javascript', mjs: 'javascript', cjs: 'javascript', jsx: 'javascript',
+  ts: 'typescript', tsx: 'typescript',
   py: 'python',
   sh: 'bash', bash: 'bash',
   ps1: 'powershell',
@@ -256,9 +274,10 @@ const EXT_LANG = {
   sql: 'sql',
   json: 'json',
   yaml: 'yaml', yml: 'yaml',
-  toml: 'toml',
+  toml: 'ini',
+  ini: 'ini',
   xml: 'xml',
-  css: 'css',
+  css: 'css', scss: 'scss',
   html: 'xml',
 };
 
@@ -281,17 +300,26 @@ function _renderCode(container, content, filename) {
   container.appendChild(pre);
 }
 
-// --- Render current note ---
-function _renderCurrentNote() {
-  if (state.activeTab < 0) return;
+// --- Render preview (shared by switch + live input) ---
+function _renderPreview(content) {
   const tab = state.tabs[state.activeTab];
   if (tab.isMd) {
     const allNames = state.searchIndex.map(e => e.name);
-    renderLinks(tab.content, allNames, previewEl, _openFileByName, (text) => jumpToLine(text));
+    renderLinks(content, allNames, previewEl, _openFileByName, (text) => jumpToLine(text));
+  } else {
+    _renderCode(previewEl, content, tab.handle.name);
+  }
+}
+
+// --- Render current note (preview + backlinks) ---
+function _renderCurrentNote() {
+  if (state.activeTab < 0) return;
+  const tab = state.tabs[state.activeTab];
+  _renderPreview(tab.content);
+  if (tab.isMd) {
     const refs = findBacklinks(tab.name, state.searchIndex);
     renderBacklinks(refs, backlinksEl, _openFileByName);
   } else {
-    _renderCode(previewEl, tab.content, tab.handle.name);
     backlinksEl.innerHTML = '';
   }
 }
@@ -314,12 +342,7 @@ noteContent.oninput = () => {
   if (state.activeTab < 0) return;
   const tab = state.tabs[state.activeTab];
   if (!tab.dirty) { tab.dirty = true; _renderTabs(); }
-  if (tab.isMd) {
-    const allNames = state.searchIndex.map(e => e.name);
-    renderLinks(getContent(), allNames, previewEl, _openFileByName, (text) => jumpToLine(text));
-  } else {
-    _renderCode(previewEl, getContent(), state.tabs[state.activeTab].handle.name);
-  }
+  _renderPreview(getContent());
 };
 
 // --- Toggle editor/preview ---
@@ -355,9 +378,10 @@ async function _deleteFile(dirHandle, name) {
 
 async function _duplicateFile(dirHandle, handle, name) {
   const content = await readFile(handle);
-  const base = name.replace('.md', '');
-  const newName = base + '-copia';
-  const newHandle = await createFile(dirHandle, newName);
+  const dot  = name.lastIndexOf('.');
+  const base = dot > 0 ? name.slice(0, dot) : name;
+  const ext  = dot > 0 ? name.slice(dot)    : '';
+  const newHandle = await createFile(dirHandle, base + '-copia' + ext);
   await writeFile(newHandle, content);
   state.tree = await buildTree(state.dirHandle);
   state.searchIndex = await buildIndex(state.tree);

@@ -25,7 +25,7 @@ Compatible con vaults de Obsidian y cualquier carpeta con archivos de texto.
 
 ## Formatos soportados
 
-Markdown: `.md` `.markdown` `.mdx`
+Markdown: `.md`
 
 Texto plano: `.txt` `.text` `.rst` `.org` `.log` `.csv`
 
@@ -37,7 +37,7 @@ Requiere un servidor local por la restricción de ES6 modules en Chrome con `fil
 
 **Python:**
 ```bash
-cd memoria
+cd <carpeta-del-proyecto>
 python -m http.server 8080
 ```
 Luego abre `http://localhost:8080` en Chrome o Edge.

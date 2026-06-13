@@ -1,6 +1,11 @@
+---
+created: 2026-06-04
+last_updated: 2026-06-13
+---
+
 # Memoria - State
 
-**Last Updated:** 2026-06-02
+**Last Updated:** 2026-06-13
 
 ---
 
@@ -72,11 +77,12 @@
 
 ## History
 
+- **2026-06-13**: Limpieza de slop y bugs tras revisión de código. Markdown reducido a solo `.md` (quitado `.markdown`/`.mdx` de buildTree e isMd). Fix createFile: forzaba `.md` a todo, ahora solo lo añade si el nombre no trae extensión; duplicar y mover archivos no-`.md` ya no los renombra a `.md`. `_duplicateFile` preserva la extensión original. Eliminado `showChoice` (modal.js, sin uso). Render de preview unificado en `_renderPreview` (se duplicaba entre switch y oninput). EXT_LANG ampliado: jsx, tsx, scss, ini. Color hardcodeado en tree.js drag-over → `var(--bg)`. test.md archivado en `.archive` y borrado de raíz. README: `cd` corregido y formatos markdown actualizados a solo `.md`. Resaltado de `.ps1`/`.bat` añadido (scripts powershell+dos del CDN highlight.js; toml→ini). Abrir otra carpeta ahora avisa y cierra las pestañas anteriores (`_closeAllTabs`).
 - **2026-06-03**: Syntax highlighting for non-.md files via highlight.js 11.9.0 CDN. Extension→language map in app.js. github-dark theme, transparent background override in style.css.
 - **2026-06-02b**: Sidebar active highlight para archivos no-.md (clase `active-other`, accent al 30%). Toggle "Mostrar extensiones" en Settings (localStorage `show-extensions`), re-renderiza árbol al cambiar.
 - **2026-06-02**: Major UX session. Added: sidebar to search+open-folder, folder visuals (▶/▼), custom modal system, context menus (right-click), save button, sidebar toggle+resize+persist, session persistence (IndexedDB), settings expansion (theme colors, font, font-size), configurable keybindings (Ctrl+B/N/E added), frontmatter strip in preview, plain text file support (20+ extensions), duplicate file, move-to-root drop zone, fixed same-dir move bug.
 - **2026-05-31**: Full rewrite complete. Modular ES6 architecture (6 modules + app.js). All 40 v1 requirements implemented.
-- **2026-05-31**: State auditado contra codigo real. Corregido: dark theme no implementado (CSS es tema claro). Añadidos: toggle editor/preview (implementado), rename no-op (campo visible pero sin funcion). listNotes() confirmado flat-only.
+- **2026-05-31**: State auditado contra codigo real. Corregido: dark theme no implementado (CSS es tema claro). Añadidos: toggle editor/preview (implementado). listNotes() confirmado flat-only.
 - **2026-04-25**: State reestructurado formato animus. Skill animus replicada a `.copilot/skills/animus`. Codebase: ~60% Phase 1, ~50% Phase 2, ~40% Phase 3.
 - **2026-01-23**: Project initialized.
 
@@ -86,3 +92,8 @@
 
 - All 40 v1 requirements complete.
 - v2 ideas: see docs/superpowers/specs/2026-05-31-memoria-complete-design.md
+
+### Pendientes (2026-06-13)
+- [ ] Mostrar en el árbol los archivos no soportados (p.ej. imágenes), visibles aunque no se puedan abrir, para que las carpetas con solo imágenes no aparezcan vacías.
+- [ ] Menú contextual en pestañas (botón derecho): cerrar todas, cerrar las de la izquierda, cerrar las de la derecha (estilo Chrome).
+- [x] Al abrir otra carpeta: avisar al usuario (con aviso reforzado si hay cambios sin guardar) y empezar limpio, cerrando las pestañas de la carpeta anterior. Hecho 2026-06-13.

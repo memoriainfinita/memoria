@@ -11,7 +11,7 @@ async function _walk(handle, isRoot = false) {
   for await (const [name, child] of handle.entries()) {
     if (child.kind === 'directory') {
       node.children.push(await _walk(child));
-    } else if (/\.(md|markdown|mdx|txt|text|rst|org|html|htm|js|ts|jsx|tsx|css|scss|json|yaml|yml|toml|ini|xml|csv|log|py|sh|bat|ps1|rb|php|java|c|cpp|h|go|rs|swift|kt|sql)$/.test(name)) {
+    } else if (/\.(md|txt|text|rst|org|html|htm|js|ts|jsx|tsx|css|scss|json|yaml|yml|toml|ini|xml|csv|log|py|sh|bat|ps1|rb|php|java|c|cpp|h|go|rs|swift|kt|sql)$/.test(name)) {
       node.children.push({ name, kind: 'file', handle: child });
     }
   }
@@ -33,7 +33,8 @@ export async function writeFile(handle, text) {
 }
 
 export async function createFile(dirHandle, name) {
-  const fname = name.endsWith('.md') ? name : name + '.md';
+  // Solo añadir .md si el nombre no trae ya una extensión (preserva .js, .txt, etc.)
+  const fname = /\.[^.]+$/.test(name) ? name : name + '.md';
   const handle = await dirHandle.getFileHandle(fname, { create: true });
   await writeFile(handle, '');
   return handle;
