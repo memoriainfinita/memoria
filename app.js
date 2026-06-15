@@ -1,4 +1,4 @@
-import { selectFolder, buildTree, readFile, writeFile, createFile, deleteEntry, createDir, buildIndex, findHandleInTree, findDirHandleForFile } from './modules/fileSystem.js';
+import { selectFolder, buildTree, readFile, writeFile, createFile, deleteEntry, createDir, buildIndex, findHandleInTree, findDirHandleForFile, mediaKind, readBlob, fileType } from './modules/fileSystem.js';
 import { renderTree, setActiveFile } from './modules/tree.js';
 import { openInEditor, getContent, showEditor, showPreview, jumpToLine } from './modules/editor.js';
 import { renderTabs } from './modules/tabs.js';
@@ -109,12 +109,18 @@ openFolderBtn.onclick = async () => {
 
 // --- Close all tabs (clears editor + preview) ---
 function _closeAllTabs() {
+  state.tabs.forEach(_disposeTab);
   state.tabs = [];
   state.activeTab = -1;
   openInEditor('');
   previewEl.innerHTML   = '';
   backlinksEl.innerHTML = '';
   _renderTabs();
+}
+
+// --- Dispose tab resources (object URLs) ---
+function _disposeTab(tab) {
+  if (tab && tab.type === 'media') URL.revokeObjectURL(tab.content.url);
 }
 
 // --- Load folder (shared by open + restore) ---
@@ -193,10 +199,16 @@ async function _openFile(handle, name) {
   const existing = state.tabs.findIndex(t => t.handle === handle);
   if (existing >= 0) { _switchTab(existing); return; }
   const file = await handle.getFile();
-  state.lastModified[name] = file.lastModified;
-  const content = await file.text();
-  const isMd = /\.md$/.test(handle.name);
-  state.tabs.push({ handle, name, content, dirty: false, isMd });
+  const kind = mediaKind(handle.name);
+  if (kind) {
+    const url = URL.createObjectURL(file);
+    state.tabs.push({ handle, name, type: 'media', content: { url, kind }, dirty: false });
+  } else {
+    state.lastModified[name] = file.lastModified;
+    const content = await file.text();
+    const isMd = /\.md$/.test(handle.name);
+    state.tabs.push({ handle, name, type: 'text', content, dirty: false, isMd });
+  }
   _switchTab(state.tabs.length - 1);
 }
 
@@ -208,12 +220,17 @@ async function _openFileByName(name) {
 
 // --- Tab management ---
 function _switchTab(idx) {
-  if (state.activeTab >= 0 && state.tabs[state.activeTab]) {
-    state.tabs[state.activeTab].content = getContent();
+  const prev = state.activeTab >= 0 ? state.tabs[state.activeTab] : null;
+  if (prev && prev.type !== 'media') {
+    prev.content = getContent();
   }
   state.activeTab = idx;
   const tab = state.tabs[idx];
-  openInEditor(tab.content);
+  if (tab.type === 'media') {
+    _showMediaView();
+  } else {
+    openInEditor(tab.content);
+  }
   setActiveFile(treeEl, tab.name);
   _renderCurrentNote();
   _renderTabs();
@@ -246,9 +263,10 @@ async function _closeTabsKeeping(keepIndices, focusIdx) {
   if (toClose.length === 0) return;
   const dirtyCount = toClose.filter(t => t.dirty).length;
   if (dirtyCount > 0 && !await showConfirm('Hay ' + dirtyCount + ' pestaña(s) con cambios sin guardar. Cerrarlas igualmente?')) return;
-  if (state.activeTab >= 0 && state.tabs[state.activeTab]) {
+  if (state.activeTab >= 0 && state.tabs[state.activeTab] && state.tabs[state.activeTab].type !== 'media') {
     state.tabs[state.activeTab].content = getContent();
   }
+  toClose.forEach(_disposeTab);
   const activeRef = state.activeTab >= 0 ? state.tabs[state.activeTab] : null;
   const focusRef  = state.tabs[focusIdx];
   state.tabs = state.tabs.filter((_, i) => keep.has(i));
@@ -271,16 +289,17 @@ async function _closeTabsKeeping(keepIndices, focusIdx) {
 
 function _updateSaveBtn() {
   const tab = state.activeTab >= 0 ? state.tabs[state.activeTab] : null;
-  saveBtn.disabled = !tab;
+  saveBtn.disabled = !tab || tab.type === 'media';
   saveBtn.classList.toggle('dirty', !!(tab && tab.dirty));
 }
 
 async function _requestClose(idx) {
   const tab = state.tabs[idx];
   if (tab.dirty && !await showConfirm('Cerrar "' + tab.name + '" sin guardar?')) return;
-  if (state.activeTab >= 0 && state.tabs[state.activeTab]) {
+  if (state.activeTab >= 0 && state.tabs[state.activeTab] && state.tabs[state.activeTab].type !== 'media') {
     state.tabs[state.activeTab].content = getContent();
   }
+  _disposeTab(tab);
   state.tabs.splice(idx, 1);
   let newActive;
   if (state.tabs.length === 0) newActive = -1;
@@ -356,10 +375,48 @@ function _renderPreview(content) {
   }
 }
 
+// --- Media view ---
+function _showMediaView() {
+  noteContent.hidden = true;
+  toggleBtn.style.display = 'none';
+  previewEl.style.display = '';
+}
+
+function _renderMedia(tab) {
+  const { url, kind } = tab.content;
+  let el;
+  if (kind === 'image') {
+    el = document.createElement('img');
+    el.src = url;
+  } else if (kind === 'audio') {
+    el = document.createElement('audio');
+    el.controls = true;
+    el.src = url;
+  } else if (kind === 'video') {
+    el = document.createElement('video');
+    el.controls = true;
+    el.src = url;
+  } else {
+    el = document.createElement('iframe');
+    el.src = url;
+  }
+  el.className = 'media-el media-' + kind;
+  const wrap = document.createElement('div');
+  wrap.className = 'media-view';
+  wrap.appendChild(el);
+  previewEl.innerHTML = '';
+  previewEl.appendChild(wrap);
+}
+
 // --- Render current note (preview + backlinks) ---
 function _renderCurrentNote() {
   if (state.activeTab < 0) return;
   const tab = state.tabs[state.activeTab];
+  if (tab.type === 'media') {
+    _renderMedia(tab);
+    backlinksEl.innerHTML = '';
+    return;
+  }
   _renderPreview(tab.content);
   if (tab.isMd) {
     const refs = findBacklinks(tab.name, state.searchIndex);
@@ -373,6 +430,7 @@ function _renderCurrentNote() {
 async function _save() {
   if (state.activeTab < 0) return;
   const tab = state.tabs[state.activeTab];
+  if (tab.type === 'media') return;
   tab.content = getContent();
   await writeFile(tab.handle, tab.content);
   tab.dirty = false;
@@ -386,12 +444,14 @@ async function _save() {
 noteContent.oninput = () => {
   if (state.activeTab < 0) return;
   const tab = state.tabs[state.activeTab];
+  if (tab.type === 'media') return;
   if (!tab.dirty) { tab.dirty = true; _renderTabs(); }
   _renderPreview(getContent());
 };
 
 // --- Toggle editor/preview ---
 toggleBtn.onclick = () => {
+  if (state.activeTab >= 0 && state.tabs[state.activeTab].type === 'media') return;
   if (noteContent.hidden) showEditor(); else showPreview();
 };
 
@@ -408,6 +468,7 @@ async function _deleteFile(dirHandle, name) {
   await deleteEntry(dirHandle, name);
   const idx = state.tabs.findIndex(t => t.name === name.replace('.md', ''));
   if (idx >= 0) {
+    _disposeTab(state.tabs[idx]);
     state.tabs.splice(idx, 1);
     if (state.activeTab === idx) {
       state.activeTab = -1;
@@ -422,12 +483,12 @@ async function _deleteFile(dirHandle, name) {
 }
 
 async function _duplicateFile(dirHandle, handle, name) {
-  const content = await readFile(handle);
+  const data = fileType(name) === 'text' ? await readFile(handle) : await readBlob(handle);
   const dot  = name.lastIndexOf('.');
   const base = dot > 0 ? name.slice(0, dot) : name;
   const ext  = dot > 0 ? name.slice(dot)    : '';
   const newHandle = await createFile(dirHandle, base + '-copia' + ext);
-  await writeFile(newHandle, content);
+  await writeFile(newHandle, data);
   state.tree = await buildTree(state.dirHandle);
   state.searchIndex = await buildIndex(state.tree);
   _refreshTree();
@@ -453,12 +514,13 @@ async function _moveFile(filename, targetDirHandle, targetDirName) {
   if (!await showConfirm('Mover "' + filename + '" a "' + targetDirName + '"?')) return;
   const srcHandle = findHandleInTree(state.tree, filename);
   if (!srcHandle) return;
-  const content = await readFile(srcHandle);
+  const data = fileType(filename) === 'text' ? await readFile(srcHandle) : await readBlob(srcHandle);
   const newHandle = await createFile(targetDirHandle, filename);
-  await writeFile(newHandle, content);
+  await writeFile(newHandle, data);
   if (srcDirHandle) await deleteEntry(srcDirHandle, filename);
   const tabIdx = state.tabs.findIndex(t => t.name === filename.replace('.md', ''));
   if (tabIdx >= 0) {
+    _disposeTab(state.tabs[tabIdx]);
     state.tabs.splice(tabIdx, 1);
     if (state.activeTab === tabIdx) state.activeTab = -1;
     else if (state.activeTab > tabIdx) state.activeTab--;
@@ -664,6 +726,7 @@ document.getElementById('setting-font-custom').oninput = (e) => {
 window.addEventListener('focus', async () => {
   if (state.activeTab < 0) return;
   const tab = state.tabs[state.activeTab];
+  if (tab.type === 'media') return;
   try {
     const file = await tab.handle.getFile();
     if (file.lastModified !== state.lastModified[tab.name]) {

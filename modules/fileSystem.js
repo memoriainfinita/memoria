@@ -11,6 +11,26 @@ function isTextFile(name) {
   return false;
 }
 
+const MEDIA_EXT = {
+  png: 'image', jpg: 'image', jpeg: 'image', gif: 'image', webp: 'image',
+  svg: 'image', bmp: 'image', ico: 'image', avif: 'image',
+  mp3: 'audio', wav: 'audio', ogg: 'audio', oga: 'audio', flac: 'audio',
+  m4a: 'audio', aac: 'audio',
+  mp4: 'video', webm: 'video', mov: 'video', mkv: 'video', m4v: 'video',
+  pdf: 'pdf',
+};
+
+export function mediaKind(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  return MEDIA_EXT[ext] || null;
+}
+
+export function fileType(name) {
+  if (isTextFile(name)) return 'text';
+  if (mediaKind(name)) return 'media';
+  return 'binary';
+}
+
 export async function buildTree(dirHandle) {
   return _walk(dirHandle, true);
 }
@@ -21,7 +41,7 @@ async function _walk(handle, isRoot = false) {
     if (child.kind === 'directory') {
       node.children.push(await _walk(child));
     } else {
-      node.children.push({ name, kind: 'file', handle: child, supported: isTextFile(name) });
+      node.children.push({ name, kind: 'file', handle: child, type: fileType(name) });
     }
   }
   node.children.sort((a, b) => {
@@ -33,6 +53,10 @@ async function _walk(handle, isRoot = false) {
 
 export async function readFile(handle) {
   return (await handle.getFile()).text();
+}
+
+export async function readBlob(handle) {
+  return handle.getFile();
 }
 
 export async function writeFile(handle, text) {
@@ -65,7 +89,7 @@ export async function buildIndex(rootNode) {
 
 async function _indexNode(node, index) {
   if (node.kind === 'file') {
-    if (node.supported === false) return;
+    if (node.type !== 'text') return;
     const content = await readFile(node.handle);
     index.push({ name: node.name.replace(/\.md$/, ''), handle: node.handle, content });
   } else {
