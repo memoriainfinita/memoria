@@ -1,11 +1,11 @@
 ---
 created: 2026-06-04
-last_updated: 2026-06-13
+last_updated: 2026-06-15
 ---
 
 # Memoria - State
 
-**Last Updated:** 2026-06-13
+**Last Updated:** 2026-06-15
 
 ---
 
@@ -57,6 +57,7 @@ last_updated: 2026-06-13
 | Save button | ✅ | Header, se activa (azul) cuando hay cambios sin guardar |
 | Archivos no soportados en árbol | ✅ | Visibles atenuados, click avisa, solo eliminar en menú |
 | Menú contextual en pestañas | ✅ | Cerrar / otras / izquierda / derecha, confirma sin guardar |
+| Previsualización multimedia | ✅ | Imagen/audio/vídeo/PDF, visor solo-lectura vía object URL |
 
 ---
 
@@ -79,6 +80,7 @@ last_updated: 2026-06-13
 
 ## History
 
+- **2026-06-15**: Previsualización nativa de multimedia. La clasificación de archivos pasa del flag `supported` a un campo `type` (`text` | `media` | `binary`) en fileSystem.js (`fileType`, `mediaKind`). Los archivos media (imagen: png/jpg/jpeg/gif/webp/svg/bmp/ico/avif; audio: mp3/wav/ogg/oga/flac/m4a/aac; vídeo: mp4/webm/mov/mkv/m4v; pdf) abren como pestañas `type:'media'` en un visor solo-lectura (`<img>`/`<audio controls>`/`<video controls>`/`<iframe>` alimentado por `URL.createObjectURL`); editor, guardar, autosave, backlinks y detección de cambio externo se omiten para media. `binary` mantiene el comportamiento "no soportado". Object URLs liberados con `_disposeTab` en todos los puntos de cierre (`_closeAllTabs`, `_requestClose`, `_closeTabsKeeping`, `_deleteFile`, `_moveFile`). Mover/duplicar usa `readBlob` para archivos no-texto (arregla la corrupción de binarios al copiarlos como texto). editor.js: `showEditor`/`showPreview` restauran la visibilidad del botón de alternar; Ctrl+E protegido en pestañas media (`toggleBtn.onclick` con guard). Spec y plan en docs/superpowers. Limitación conocida: las pestañas media no se restauran tras recargar (la restauración sigue asumiendo `.md`).
 - **2026-06-13b**: Árbol muestra todos los archivos, no solo los de la whitelist (`_walk` ya no filtra; flag `supported` por nodo). No soportados: atenuados+itálica (`.file-unsupported`), sin drag, click avisa "Tipo de archivo no soportado", menú contextual solo "Eliminar"; `_indexNode` los salta para no leer binarios. Detección de texto extraída a `isTextFile()`: además de la whitelist, abre dotfiles sin extensión adicional (`.gitignore`, `.env`, `.bashrc`…) y nombres conocidos (`Dockerfile`, `Makefile`, `LICENSE`, `README`, `CHANGELOG`, `AUTHORS`, `NOTICE`). Menú contextual en pestañas (botón derecho): Cerrar / Cerrar otras / Cerrar a la izquierda / Cerrar a la derecha, vía `_tabMenu` + `_closeTabsKeeping`, que confirma si hay pestañas sin guardar.
 - **2026-06-13**: Limpieza de slop y bugs tras revisión de código. Markdown reducido a solo `.md` (quitado `.markdown`/`.mdx` de buildTree e isMd). Fix createFile: forzaba `.md` a todo, ahora solo lo añade si el nombre no trae extensión; duplicar y mover archivos no-`.md` ya no los renombra a `.md`. `_duplicateFile` preserva la extensión original. Eliminado `showChoice` (modal.js, sin uso). Render de preview unificado en `_renderPreview` (se duplicaba entre switch y oninput). EXT_LANG ampliado: jsx, tsx, scss, ini. Color hardcodeado en tree.js drag-over → `var(--bg)`. test.md archivado en `.archive` y borrado de raíz. README: `cd` corregido y formatos markdown actualizados a solo `.md`. Resaltado de `.ps1`/`.bat` añadido (scripts powershell+dos del CDN highlight.js; toml→ini). Abrir otra carpeta ahora avisa y cierra las pestañas anteriores (`_closeAllTabs`).
 - **2026-06-03**: Syntax highlighting for non-.md files via highlight.js 11.9.0 CDN. Extension→language map in app.js. github-dark theme, transparent background override in style.css.
@@ -100,5 +102,5 @@ last_updated: 2026-06-13
 - [x] Mostrar en el árbol los archivos no soportados (p.ej. imágenes), visibles aunque no se puedan abrir, para que las carpetas con solo imágenes no aparezcan vacías. Hecho 2026-06-13.
 - [x] Menú contextual en pestañas (botón derecho): cerrar todas, cerrar las de la izquierda, cerrar las de la derecha (estilo Chrome). Hecho 2026-06-13.
 - [ ] Revisar el diseño de la app. El minimalismo gusta, pero se ve poco profesional.
-- [ ] Previsualizar archivos que el navegador puede abrir de forma nativa (imágenes, vídeo, audio, etc.). Evaluar complejidad.
+- [x] Previsualizar archivos que el navegador puede abrir de forma nativa (imágenes, vídeo, audio, PDF). Hecho 2026-06-15.
 - [x] Al abrir otra carpeta: avisar al usuario (con aviso reforzado si hay cambios sin guardar) y empezar limpio, cerrando las pestañas de la carpeta anterior. Hecho 2026-06-13.
