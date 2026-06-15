@@ -14,6 +14,7 @@ export function getContent() {
 export function showEditor() {
   textarea.hidden = false;
   preview.style.display = 'none';
+  toggleBtn.style.display = '';
   toggleBtn.textContent = 'Vista previa';
   textarea.focus();
 }
@@ -21,6 +22,7 @@ export function showEditor() {
 export function showPreview() {
   textarea.hidden = true;
   preview.style.display = '';
+  toggleBtn.style.display = '';
   toggleBtn.textContent = 'Editar';
 }
 

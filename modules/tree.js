@@ -51,7 +51,7 @@ function _node(node, parentDirHandle, cb) {
     details.appendChild(ul);
     li.appendChild(details);
   } else {
-    const unsupported = node.supported === false;
+    const unsupported = node.type === 'binary';
     const span = document.createElement('span');
     span.className = 'file-item' + (unsupported ? ' file-unsupported' : '');
     span.dataset.filename = node.name;
@@ -80,7 +80,7 @@ function _node(node, parentDirHandle, cb) {
 }
 
 async function _fileMenu(node, parentDirHandle, cb, x, y) {
-  const items = node.supported === false
+  const items = node.type === 'binary'
     ? [{ label: 'Eliminar', value: 'delete' }]
     : [{ label: 'Duplicar', value: 'duplicate' }, { label: 'Eliminar', value: 'delete' }];
   const choice = await showContextMenu(x, y, items);
