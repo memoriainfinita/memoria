@@ -109,3 +109,4 @@ last_updated: 2026-06-16
 
 ### Pendientes (2026-06-16)
 - [ ] Números de línea al ver/editar archivos, toggleable desde Ajustes. Opciones de alcance: gutter en el editor (textarea, requiere desactivar wrap), numeración en archivos de código en preview, o ambos. Pendiente decidir alcance.
+- [ ] Revisar el scroll horizontal en líneas largas: ahora aparece barra de desplazamiento lateral, y en archivos muy grandes dificulta la lectura. Decidir entre wrap de líneas largas u otra solución.
