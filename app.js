@@ -3,7 +3,7 @@ import { renderTree, setActiveFile } from './modules/tree.js';
 import { openInEditor, getContent, showEditor, showPreview, jumpToLine } from './modules/editor.js';
 import { renderTabs } from './modules/tabs.js';
 import { searchFull, renderResults } from './modules/search.js';
-import { renderLinks, findBacklinks, renderBacklinks } from './modules/links.js';
+import { renderLinks, findBacklinks } from './modules/links.js';
 import { showAlert, showConfirm, showPrompt } from './modules/modal.js';
 import { showContextMenu } from './modules/contextmenu.js';
 import { dbGet, dbSet } from './modules/persist.js';
@@ -408,7 +408,7 @@ function _renderMedia(tab) {
   previewEl.appendChild(wrap);
 }
 
-// --- Render current note (preview + backlinks) ---
+// --- Render current note (preview + status bar) ---
 function _renderCurrentNote() {
   if (state.activeTab < 0) return;
   const tab = state.tabs[state.activeTab];
@@ -418,13 +418,56 @@ function _renderCurrentNote() {
     return;
   }
   _renderPreview(tab.content);
+  _renderStatusBar();
+}
+
+// --- Status bar (#backlinks): links a la izquierda, info del archivo a la derecha ---
+function _statusFileType(tab) {
+  if (tab.isMd) return 'markdown';
+  return tab.name.includes('.') ? tab.name.split('.').pop().toLowerCase() : 'texto';
+}
+
+function _caretLineCol() {
+  const pos = noteContent.selectionStart || 0;
+  const upto = noteContent.value.slice(0, pos);
+  const line = upto.split('\n').length;
+  const col = pos - upto.lastIndexOf('\n');
+  return line + ':' + col;
+}
+
+function _renderStatusBar() {
+  if (state.activeTab < 0) { backlinksEl.innerHTML = ''; return; }
+  const tab = state.tabs[state.activeTab];
+  if (tab.type === 'media') { backlinksEl.innerHTML = ''; return; }
+
+  let leftHtml = '';
   if (tab.isMd) {
     const refs = findBacklinks(tab.name, state.searchIndex);
-    renderBacklinks(refs, backlinksEl, _openFileByName);
-  } else {
-    backlinksEl.innerHTML = '';
+    if (refs.length) {
+      leftHtml = '<span class="status-badge">↩ LINKS</span>' +
+        refs.map(n => `<a data-note="${n}">${n}</a>`).join('');
+    }
   }
+  const rightHtml =
+    `<span class="status-seg">${_statusFileType(tab)}</span>` +
+    `<span class="status-seg">utf-8</span>` +
+    `<span class="status-seg status-pos">${_caretLineCol()}</span>`;
+
+  backlinksEl.innerHTML =
+    `<span class="status-links">${leftHtml}</span>` +
+    `<span class="status-info">${rightHtml}</span>`;
+
+  backlinksEl.querySelectorAll('.status-links a').forEach(a => {
+    a.onclick = () => _openFileByName(a.dataset.note);
+  });
 }
+
+// Actualiza solo el segmento de posicion al mover el cursor (sin recomputar links)
+function _updateCaretSeg() {
+  const seg = backlinksEl.querySelector('.status-pos');
+  if (seg) seg.textContent = _caretLineCol();
+}
+['keyup', 'click', 'select'].forEach(ev => noteContent.addEventListener(ev, _updateCaretSeg));
 
 // --- Save ---
 async function _save() {
@@ -447,6 +490,7 @@ noteContent.oninput = () => {
   if (tab.type === 'media') return;
   if (!tab.dirty) { tab.dirty = true; _renderTabs(); }
   _renderPreview(getContent());
+  _updateCaretSeg();
 };
 
 // --- Toggle editor/preview ---
