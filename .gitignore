@@ -20,3 +20,6 @@ Thumbs.db
 # Dev scripts
 server-start.bat
 server-stop.bat
+
+# Claude Design handoff bundle (local provenance, not app code)
+_design-handoff/
