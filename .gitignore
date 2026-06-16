@@ -23,3 +23,9 @@ server-stop.bat
 
 # Claude Design handoff bundle (local provenance, not app code)
 _design-handoff/
+
+# Local Claude Code config (personal, not app)
+.claude/
+
+# Archive (history, backups — keep local only)
+.archive/
