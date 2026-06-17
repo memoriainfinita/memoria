@@ -1,6 +1,8 @@
 # Memoria
 
-**Demo en vivo:** https://memoriainfinita.github.io/memoria/ (Chrome o Edge)
+[![Demo en vivo](https://img.shields.io/badge/demo-en_vivo-569cd6?style=flat-square&logo=googlechrome&logoColor=white)](https://memoriainfinita.github.io/memoria/)
+[![License: GPL v3](https://img.shields.io/badge/license-GPL_v3-blue?style=flat-square)](LICENSE)
+[![Vanilla JS](https://img.shields.io/badge/vanilla-JS-f7df1e?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/docs/Web/JavaScript)
 
 Editor de notas y archivos de texto local-first. Sin base de datos, sin servidor, sin instalación. Trabaja directamente con tus archivos.
 
