@@ -29,3 +29,6 @@ _design-handoff/
 
 # Archive (history, backups — keep local only)
 .archive/
+
+# Superpowers planning docs (local only)
+docs/superpowers/
