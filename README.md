@@ -11,11 +11,15 @@ Compatible con vaults de Obsidian y cualquier carpeta con archivos de texto.
 - Editor con vista previa en tiempo real
 - Archivos Markdown: render completo, wiki-links `[[nombre]]`, backlinks, frontmatter YAML ignorado en preview
 - Archivos de texto plano y código: se muestran sin procesar, tal cual
+- Resaltado de sintaxis en archivos de código
+- Previsualización nativa de imágenes, audio, vídeo y PDF en visor de solo lectura
+- Archivos no soportados visibles en el árbol (atenuados), sin abrirse
 - Multi-tab: edita varios archivos a la vez
 - Búsqueda por nombre y contenido completo
 - Crear, duplicar, eliminar y mover archivos y carpetas desde la interfaz
 - Drag & drop para mover archivos entre carpetas y de vuelta a la raíz
-- Menú contextual (botón derecho) en archivos y carpetas
+- Menú contextual (botón derecho) en archivos, carpetas y pestañas (cerrar otras / a la izquierda / a la derecha)
+- Detección de cambios externos: avisa si el archivo abierto se modificó fuera de la app
 - Sidebar redimensionable y ocultable
 - Persistencia de sesión: restaura la carpeta y pestañas abiertas al recargar
 - Tema personalizable: color de fondo, acento, tipografía y tamaño de texto
@@ -30,6 +34,8 @@ Markdown: `.md`
 Texto plano: `.txt` `.text` `.rst` `.org` `.log` `.csv`
 
 Código: `.js` `.ts` `.jsx` `.tsx` `.html` `.htm` `.css` `.scss` `.json` `.yaml` `.yml` `.toml` `.ini` `.xml` `.py` `.sh` `.bat` `.ps1` `.rb` `.php` `.java` `.c` `.cpp` `.h` `.go` `.rs` `.swift` `.kt` `.sql`
+
+Multimedia (previsualización solo lectura): `.png` `.jpg` `.jpeg` `.gif` `.webp` `.svg` `.bmp` `.ico` `.avif` `.mp3` `.wav` `.ogg` `.oga` `.flac` `.m4a` `.aac` `.mp4` `.webm` `.mov` `.mkv` `.m4v` `.pdf`
 
 ## Uso
 
@@ -87,4 +93,4 @@ modules/
   persist.js        — IndexedDB para persistencia de sesión
 ```
 
-ES6 modules sin bundler. `marked` cargado como CDN global.
+ES6 modules sin bundler. `marked` (Markdown) y `highlight.js` (resaltado de sintaxis) cargados como CDN.
