@@ -1,5 +1,7 @@
 # Memoria
 
+**Demo en vivo:** https://memoriainfinita.github.io/memoria/ (Chrome o Edge)
+
 Editor de notas y archivos de texto local-first. Sin base de datos, sin servidor, sin instalación. Trabaja directamente con tus archivos.
 
 Compatible con vaults de Obsidian y cualquier carpeta con archivos de texto.
