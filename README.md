@@ -98,3 +98,7 @@ modules/
 ```
 
 ES6 modules sin bundler. `marked` (Markdown) y `highlight.js` (resaltado de sintaxis) cargados como CDN.
+
+## Credits
+
+Desarrollado por [@memoriainfinita](https://github.com/memoriainfinita) con la asistencia de Claude (Anthropic): Opus 4.8 y Sonnet 4.6.
