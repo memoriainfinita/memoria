@@ -32,3 +32,5 @@ _design-handoff/
 
 # Superpowers planning docs (local only)
 docs/superpowers/
+# Project state (local working notes, local paths)
+STATE.md

@@ -8,6 +8,8 @@ Editor de notas y archivos de texto local-first. Sin base de datos, sin servidor
 
 Compatible con vaults de Obsidian y cualquier carpeta con archivos de texto.
 
+![Memoria con una carpeta de notas abierta: árbol de carpetas, pestañas y vista previa con tabla, código y wiki-links](docs/memoria-demo.png)
+
 ## Características
 
 - Abre cualquier carpeta local — los archivos se leen y escriben directamente en disco
@@ -38,6 +40,8 @@ Markdown: `.md`
 Texto plano: `.txt` `.text` `.rst` `.org` `.log` `.csv`
 
 Código: `.js` `.ts` `.jsx` `.tsx` `.html` `.htm` `.css` `.scss` `.json` `.yaml` `.yml` `.toml` `.ini` `.xml` `.py` `.sh` `.bat` `.ps1` `.rb` `.php` `.java` `.c` `.cpp` `.h` `.go` `.rs` `.swift` `.kt` `.sql`
+
+Sin extensión: dotfiles (`.gitignore`, `.env`, `.bashrc`…) y nombres conocidos (`Dockerfile`, `Makefile`, `LICENSE`, `README`, `CHANGELOG`, `AUTHORS`, `NOTICE`)
 
 Multimedia (previsualización solo lectura): `.png` `.jpg` `.jpeg` `.gif` `.webp` `.svg` `.bmp` `.ico` `.avif` `.mp3` `.wav` `.ogg` `.oga` `.flac` `.m4a` `.aac` `.mp4` `.webm` `.mov` `.mkv` `.m4v` `.pdf`
 
