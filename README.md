@@ -1,4 +1,4 @@
-# Memoria
+# memoria
 
 [![Demo en vivo](https://img.shields.io/badge/demo-en_vivo-569cd6?style=flat-square&logo=googlechrome&logoColor=white)](https://memoriainfinita.github.io/memoria/)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL_v3-blue?style=flat-square)](LICENSE)
@@ -102,6 +102,10 @@ modules/
 ```
 
 ES6 modules sin bundler. `marked` (Markdown) y `highlight.js` (resaltado de sintaxis) cargados como CDN.
+
+## Licencia
+
+GPL-3.0. Ver `LICENSE`.
 
 ## Credits
 
