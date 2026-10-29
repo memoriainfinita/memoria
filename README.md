@@ -6,7 +6,7 @@
 
 Editor de notas y archivos de texto local-first. Sin base de datos, sin servidor, sin instalación. Trabaja directamente con tus archivos.
 
-Compatible con vaults de Obsidian y cualquier carpeta con archivos de texto.
+Compatible con vaults de Obsidian y cualquier carpeta con archivos de texto. **[Guía de uso](docs/guide/README.md)**.
 
 ![Memoria con una carpeta de notas abierta: árbol de carpetas, pestañas y vista previa con tabla, código y wiki-links](docs/memoria-demo.png)
 
